@@ -20,17 +20,16 @@ public class RiskAnalyzer {
         }
 
         if ("MEMBER_INFO".equals(type)) {
-            return "LOW";
+            return "HIGH";
         }
 
         return "LOW";
     }
 
-    // 위험도에 따른 보안 정책
     public String getPolicy(String risk) {
 
         if ("HIGH".equals(risk)) {
-            return "BLOCK";
+            return "PROTECT";
         }
 
         if ("MEDIUM".equals(risk)) {
