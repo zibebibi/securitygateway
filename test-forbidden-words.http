@@ -1,0 +1,12 @@
+
+
+POST http://localhost:8080/api/forbidden-words
+Content-Type: application/json
+
+{
+  "word": "유튜브",
+  "category": "학습 방해",
+  "policy": "GUIDE",
+  "active": true,
+  "defaultWord": false
+}
