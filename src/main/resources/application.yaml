@@ -4,10 +4,14 @@ spring:
 
   datasource:
     url: jdbc:mysql://localhost:3306/clubdb
-    username: root
-    password: 1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  model: gpt-5.6-luna

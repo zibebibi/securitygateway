@@ -1,370 +1,670 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <title>
-        동호회 회원정보 보호 시스템
-    </title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교육용 AI Guardrail</title>
     <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-        }
-
-        .container {
-            width: 750px;
-            margin: 60px auto;
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .description {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .input-area {
-            display: flex;
-            gap: 10px;
-        }
-
-        #question {
-            flex: 1;
-            padding: 14px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            padding: 14px 22px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .card {
-            padding: 20px;
-            margin-top: 20px;
-            background-color: #f8f8f8;
-            border-radius: 8px;
-        }
-
-        .row {
-            margin: 10px 0;
-        }
-
-        .label {
-            font-weight: bold;
-        }
-
-        .error {
-            padding: 20px;
-            margin-top: 20px;
-            background-color: #eeeeee;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
+        :root{--navy:#172554;--blue:#3157d5;--blue2:#eaf0ff;--ink:#172033;--muted:#667085;--line:#e5eaf2;--bg:#f5f7fb;--white:#fff;--green:#16845b;--red:#c83e4d;--amber:#9a6700;--shadow:0 12px 34px rgba(27,39,74,.07)}
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);font-family:Arial,"Noto Sans KR",sans-serif;color:var(--ink);line-height:1.5}
+        button,input,select,textarea{font:inherit}
+        button{cursor:pointer;border:0}
+        .hidden{display:none!important}
+        .topbar{height:76px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100% - 1180px)/2));gap:20px}
+        .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;color:var(--navy)}
+        .brand-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--blue);color:white;font-size:21px}
+        .topbar-right{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}
+        .container{max-width:1180px;margin:34px auto;padding:0 22px}
+        .page{display:none}.page.active{display:block}
+        .panel{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px}
+        .muted{color:var(--muted)}
+        .eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--blue);text-transform:uppercase}
+        .page-title{margin:5px 0 8px;font-size:27px;letter-spacing:-.03em}
+        .subtitle{margin:0;color:var(--muted)}
+        .btn{padding:11px 16px;border-radius:10px;font-weight:700;transition:.15s}
+        .btn-primary{background:var(--blue);color:white}.btn-primary:hover{background:#2547bc}
+        .btn-secondary{background:#eef1f7;color:#344054}.btn-secondary:hover{background:#e1e6f0}
+        .btn-danger{background:#fff0f1;color:var(--red)}
+        .btn-small{padding:7px 10px;font-size:13px}.btn-full{width:100%;margin-top:16px}
+        .link-button{background:transparent;color:var(--blue);font-weight:700;padding:5px}
+        .field{display:flex;flex-direction:column;gap:7px;margin:14px 0}
+        .field label{font-size:14px;font-weight:700}
+        .field input,.field select,.field textarea,.input{width:100%;padding:12px 13px;border:1px solid #d6dce7;border-radius:10px;background:white;outline:none}
+        .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #3157d51a}
+        .notice{border-radius:12px;background:#f0f5ff;color:#344f9a;padding:13px 15px;font-size:13px}
+        .error{color:var(--red);font-size:13px;margin-top:8px}
+        .auth-wrap{max-width:900px;margin:34px auto;display:grid;grid-template-columns:1fr 1fr;background:white;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}
+        .auth-aside{padding:42px;background:linear-gradient(145deg,#1c2c65,#365edc);color:white;display:flex;flex-direction:column;justify-content:space-between;min-height:490px}
+        .auth-aside h1{font-size:32px;line-height:1.25;margin:16px 0}.auth-aside p{color:#e0e7ff}
+        .auth-aside .brand{color:white}.auth-aside .brand-mark{background:#ffffff25}
+        .auth-aside ul{padding-left:20px;color:#e0e7ff;line-height:2}
+        .auth-form{padding:42px}.auth-form h2{margin:0 0 6px;font-size:25px}
+        .auth-form .switch{text-align:center;margin-top:18px;font-size:14px;color:var(--muted)}
+        .demo-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.6}
+        .app-layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:24px;align-items:start}
+        .sidebar{background:white;border:1px solid var(--line);border-radius:17px;padding:16px;position:sticky;top:18px}
+        .profile{padding:12px 10px 18px;border-bottom:1px solid var(--line);margin-bottom:12px}
+        .avatar{width:38px;height:38px;border-radius:12px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-weight:800;float:left;margin-right:10px}
+        .profile strong{display:block;padding-top:1px}.profile small{color:var(--muted)}
+        .nav-label{font-size:11px;letter-spacing:.08em;color:#98a2b3;font-weight:800;padding:12px 10px 5px}
+        .nav-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 12px;border-radius:10px;background:transparent;color:#475467;margin:2px 0;font-weight:650}
+        .nav-btn:hover,.nav-btn.active{background:var(--blue2);color:var(--blue)}
+        .nav-bottom{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+        .content-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}
+        .content-head .actions{display:flex;gap:8px;flex-wrap:wrap}
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px}
+        .stat{background:white;border:1px solid var(--line);border-radius:15px;padding:19px}
+        .stat .label{font-size:13px;color:var(--muted)}.stat .number{font-size:28px;font-weight:800;margin-top:7px}.stat .small{font-size:12px;color:var(--muted)}
+        .dashboard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+        .feature{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:left;transition:.15s}
+        .feature:hover{border-color:#9bb0ff;transform:translateY(-2px);box-shadow:var(--shadow)}
+        .feature-icon{width:45px;height:45px;border-radius:13px;background:var(--blue2);display:grid;place-items:center;font-size:23px;margin-bottom:15px}
+        .feature h3{margin:0 0 7px}.feature p{margin:0;color:var(--muted);font-size:14px}
+        .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.section-head h3{margin:0}
+        .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+        th,td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+        th{font-size:12px;color:var(--muted);background:#fafbfe}tbody tr:last-child td{border-bottom:0}
+        .badge{display:inline-block;padding:4px 9px;border-radius:99px;font-size:12px;font-weight:800}
+        .badge-guide{background:#fff4d6;color:#8b6200}.badge-block{background:#ffe7e9;color:#b42332}.badge-allow{background:#dcfce7;color:#167044}
+        .badge-active{background:#e8f7ef;color:#167044}.badge-off{background:#eef0f4;color:#667085}
+        .empty{text-align:center;color:var(--muted);padding:35px 15px}
+        .child-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+        .child-main{display:flex;align-items:center;gap:12px}.child-avatar{width:42px;height:42px;border-radius:13px;background:#e8f7ef;display:grid;place-items:center}
+        .word-tools{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px;align-items:end}.word-tools .field{margin:0}
+        .word-category{margin-top:25px}.word-category h4{margin:0 0 10px}
+        .word-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff}
+        .word-left{display:flex;align-items:center;gap:10px}.word-left input{width:17px;height:17px}.word-meta{font-size:12px;color:var(--muted);margin-top:2px}
+        .policy-row{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:20px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+        .policy-row:last-child{border-bottom:0}.policy-row p{font-size:13px;color:var(--muted);margin:4px 0 0}
+        .policy-row select{padding:10px;border:1px solid #d6dce7;border-radius:9px;background:white}
+        .chat-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px}
+        .chat-box{min-height:270px;max-height:430px;overflow:auto;padding:18px;background:#f8faff;border:1px solid var(--line);border-radius:13px;margin-bottom:15px}
+        .message{padding:13px 15px;border-radius:13px;margin:10px 0;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere}
+        .message.user{background:#e8efff;margin-left:auto}.message.ai{background:white;border:1px solid var(--line)}
+        .message.system{background:#fff6df;color:#775800;font-size:13px}
+        .chat-input{display:flex;gap:10px;align-items:stretch}.chat-input textarea{flex:1;min-height:68px;resize:vertical;padding:12px;border:1px solid #d6dce7;border-radius:11px}
+        .chat-input button{align-self:stretch}.quick-prompts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+        .quick-prompts button{border:1px solid var(--line);background:white;color:#475467;border-radius:99px;padding:7px 11px;font-size:12px}
+        .side-tip{background:#f1f5ff;border-radius:13px;padding:17px;margin-bottom:14px}.side-tip h4{margin:0 0 7px}.side-tip p{font-size:13px;color:#53627f;margin:0}
+        .toast{position:fixed;right:22px;bottom:22px;background:#182230;color:white;padding:13px 18px;border-radius:11px;box-shadow:var(--shadow);z-index:10;max-width:calc(100% - 44px)}
+        .modal-backdrop{position:fixed;inset:0;background:#17203380;display:grid;place-items:center;padding:20px;z-index:20}
+        .modal{width:min(500px,100%);background:white;border-radius:18px;padding:25px;box-shadow:0 25px 70px #0003}
+        .modal-head{display:flex;align-items:center;justify-content:space-between}.modal-head h3{margin:0}
+        .modal-close{font-size:22px;background:transparent;color:var(--muted)}.footer-note{font-size:12px;color:var(--muted);margin:16px 0 0}
+        @media(max-width:850px){.app-layout{grid-template-columns:1fr}.sidebar{position:static}.sidebar nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.nav-label,.nav-bottom{grid-column:1/-1}.stats{grid-template-columns:1fr 1fr}.chat-layout{grid-template-columns:1fr}.auth-wrap{grid-template-columns:1fr}.auth-aside{min-height:auto;padding:28px}.auth-aside ul{display:none}.word-tools{grid-template-columns:1fr 1fr}.word-tools .btn{grid-column:1/-1}.topbar{padding:0 18px}}
+        @media(max-width:560px){.container{padding:0 13px;margin:20px auto}.topbar{height:66px}.brand{font-size:16px}.topbar-right #topUser{display:none}.auth-form{padding:26px}.auth-aside h1{font-size:27px}.panel{padding:20px}.content-head{flex-direction:column}.stats,.dashboard-grid{grid-template-columns:1fr}.word-tools{grid-template-columns:1fr}.word-tools .btn{grid-column:auto}.policy-row{grid-template-columns:1fr 115px;gap:10px}.child-row{align-items:flex-start}.child-row .actions{display:flex;flex-direction:column}.sidebar nav{grid-template-columns:1fr 1fr}.chat-input{flex-direction:column}.chat-input button{width:100%}}
     </style>
-
 </head>
-
 <body>
+<header class="topbar">
+    <div class="brand"><span class="brand-mark">🛡</span><span>교육용 AI Guardrail</span></div>
+    <div class="topbar-right"><span id="topUser">학습을 위한 안전한 AI 환경</span><button id="headerLogout" class="btn btn-secondary btn-small hidden" onclick="logout()">로그아웃</button></div>
+</header>
+<main class="container">
+    <section id="authPage" class="page active">
+        <div class="auth-wrap">
+            <aside class="auth-aside">
+                <div><div class="brand"><span class="brand-mark">✦</span><span>AI 학습 보호 시스템</span></div><h1>안전하게 배우고,<br>올바르게 질문하세요.</h1><p>학생의 학습을 돕고, AI 사용이 학습 목적에 맞게 이루어지도록 관리합니다.</p></div>
+                <ul><li>학습 목적에 맞는 AI 질문</li><li>부모가 관리하는 사용 정책</li><li>질문에 따른 안내와 차단</li></ul>
+                <small style="color:#dce5ff">교육용 AI Guardrail · Prototype</small>
+            </aside>
+            <div class="auth-form">
+                <div id="loginForm">
+                    <div class="eyebrow">WELCOME BACK</div><h2>로그인</h2><p class="subtitle">등록한 계정으로 시작하세요.</p>
+                    <div class="field"><label for="loginId">아이디</label><input id="loginId" autocomplete="username" placeholder="아이디 입력"></div>
+                    <div class="field"><label for="loginPassword">비밀번호</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')login()"></div>
+                    <div id="loginError" class="error"></div>
+                    <button class="btn btn-primary btn-full" onclick="login()">로그인</button>
+                    <div class="switch">아직 계정이 없나요? <button class="link-button" onclick="showSignup()">부모 회원가입</button></div>
+                    <p class="demo-note">부모와 자녀 계정은 서버 DB에 저장됩니다. 등록한 아이디와 비밀번호로 로그인할 수 있습니다.</p>
+                </div>
+                <div id="signupForm" class="hidden">
+                    <div class="eyebrow">CREATE ACCOUNT</div><h2>부모 회원가입</h2><p class="subtitle">부모 계정을 만든 뒤 자녀 계정을 추가할 수 있습니다.</p>
+                    <div class="field"><label for="signupName">이름</label><input id="signupName" autocomplete="name" placeholder="이름 입력"></div>
+                    <div class="field"><label for="signupId">아이디</label><input id="signupId" autocomplete="username" placeholder="사용할 아이디 입력"></div>
+                    <div class="field"><label for="signupPassword">비밀번호</label><input id="signupPassword" type="password" autocomplete="new-password" placeholder="4자 이상 입력"></div>
+                    <div class="field"><label for="signupPasswordConfirm">비밀번호 확인</label><input id="signupPasswordConfirm" type="password" autocomplete="new-password" placeholder="비밀번호 다시 입력" onkeydown="if(event.key==='Enter')signup()"></div>
+                    <div id="signupError" class="error"></div><button class="btn btn-primary btn-full" onclick="signup()">회원가입</button>
+                    <div class="switch">이미 계정이 있나요? <button class="link-button" onclick="showLogin()">로그인</button></div>
+                    <p class="demo-note">계정 정보는 서버 DB에 저장되며 비밀번호는 서버에서 암호화해 관리합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<div class="container">
+    <section id="parentApp" class="page">
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="profile"><div class="avatar">부</div><strong id="parentProfileName">부모 계정</strong><small>부모 관리자</small><div style="clear:both"></div></div>
+                <nav>
+                    <div class="nav-label">관리 메뉴</div>
+                    <button class="nav-btn active" data-parent-view="dashboard" onclick="showParentView('dashboard')">▦ 대시보드</button>
+                    <button class="nav-btn" data-parent-view="children" onclick="showParentView('children')">♙ 자녀 관리</button>
+                    <button class="nav-btn" data-parent-view="words" onclick="showParentView('words')">⊘ 금지어 관리</button>
+                    <button class="nav-btn" data-parent-view="policy" onclick="showParentView('policy')">⚙ AI 사용 정책</button>
+                    <button class="nav-btn" data-parent-view="logs" onclick="showParentView('logs')">▤ 사용 기록</button>
+                    <div class="nav-bottom"><button class="nav-btn" onclick="logout()">↪ 로그아웃</button></div>
+                </nav>
+            </aside>
+            <div>
+                <section id="parentDashboard" class="parent-view">
+                    <div class="content-head"><div><div class="eyebrow">PARENT CONSOLE</div><h1 class="page-title">대시보드</h1><p class="subtitle">자녀의 교육용 AI 사용 환경을 관리하세요.</p></div><button class="btn btn-primary" onclick="showParentView('children');openChildModal()">＋ 자녀 계정 추가</button></div>
+                    <div class="stats">
+                        <div class="stat"><div class="label">등록된 자녀</div><div class="number" id="childCount">0</div><div class="small">관리 중인 자녀 계정</div></div>
+                        <div class="stat"><div class="label">금지어 항목</div><div class="number" id="wordCount">0</div><div class="small">사용 설정된 항목</div></div>
+                        <div class="stat"><div class="label">이번 세션 기록</div><div class="number" id="logCount">0</div><div class="small">현재 브라우저 세션 기준</div></div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <button class="feature" onclick="showParentView('children')"><div class="feature-icon">👨‍👧</div><h3>자녀 관리</h3><p>자녀 계정을 추가하고 등록된 계정을 확인합니다.</p></button>
+                        <button class="feature" onclick="showParentView('words')"><div class="feature-icon">🚫</div><h3>금지어 관리</h3><p>기본 항목을 선택하거나 가족에게 필요한 표현을 추가합니다.</p></button>
+                        <button class="feature" onclick="showParentView('policy')"><div class="feature-icon">🛡️</div><h3>AI 사용 정책</h3><p>항목별 처리 방식을 안내, 차단, 허용 중에서 설정합니다.</p></button>
+                        <button class="feature" onclick="showParentView('logs')"><div class="feature-icon">📊</div><h3>사용 기록</h3><p>이 브라우저 세션에서 처리한 질문 결과를 확인합니다.</p></button>
+                    </div>
+                    <p class="footer-note">※ 계정은 서버 DB에 저장됩니다. 금지어·정책·사용 기록은 현재 화면 구현 기준으로 동작합니다.</p>
+                </section>
 
-    <h1>
-        동호회 회원정보 보호 시스템
-    </h1>
+                <section id="parentChildren" class="parent-view hidden">
+                    <div class="content-head"><div><div class="eyebrow">FAMILY ACCOUNTS</div><h1 class="page-title">자녀 관리</h1><p class="subtitle">자녀 계정을 생성하고 관리합니다.</p></div><button class="btn btn-primary" onclick="openChildModal()">＋ 자녀 계정 추가</button></div>
+                    <div class="panel"><div class="section-head"><h3>등록된 자녀 계정</h3><span class="muted" id="childrenCountLabel">0명</span></div><div id="childrenList"></div><p class="footer-note">자녀 계정은 서버 DB에 등록됩니다. 목록은 현재 로그인 중 화면에서 표시됩니다.</p></div>
+                </section>
 
-    <div class="description">
-        자연어 질문을 입력하면 개인정보를 탐지하고
-        보호된 결과를 반환합니다.
-    </div>
+                <section id="parentWords" class="parent-view hidden">
+                    <div class="content-head"><div><div class="eyebrow">WORD & TOPIC RULES</div><h1 class="page-title">금지어 관리</h1><p class="subtitle">기본 항목을 선택하고, 추가 표현의 처리 방식을 설정하세요.</p></div></div>
+                    <div class="panel">
+                        <div class="notice">학습 방해 요소(예: 게임·유튜브·유명인 관련 잡담)는 기본적으로 GUIDE를 권장합니다. 단어만으로 위험성을 단정하기보다 질문의 맥락을 함께 판단해야 합니다.</div>
+                        <div class="word-tools" style="margin-top:18px">
+                            <div class="field"><label for="newWord">표현 / 단어</label><input id="newWord" placeholder="예: 유튜브 추천해줘"></div>
+                            <div class="field"><label for="newWordCategory">분류</label><select id="newWordCategory"><option>학습 방해</option><option>욕설·비속어</option><option>폭력·위험</option><option>학습 부정행위</option><option>개인정보</option><option>기타</option></select></div>
+                            <div class="field"><label for="newWordPolicy">처리 방식</label><select id="newWordPolicy"><option value="GUIDE">GUIDE · 학습 안내</option><option value="BLOCK">BLOCK · 차단</option><option value="ALLOW">ALLOW · 허용</option></select></div>
+                            <button class="btn btn-primary" onclick="addWord()">항목 추가</button>
+                        </div>
+                        <div id="wordGroups"></div>
+                        <div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn btn-primary" onclick="saveWords()">설정 적용</button></div>
+                        <p class="footer-note">설정 적용은 현재 화면 상태에 반영됩니다. 서버 DB 저장은 아직 연결되지 않았습니다.</p>
+                    </div>
+                </section>
 
-    <div class="input-area">
+                <section id="parentPolicy" class="parent-view hidden">
+                    <div class="content-head"><div><div class="eyebrow">GUARDRAIL SETTINGS</div><h1 class="page-title">AI 사용 정책</h1><p class="subtitle">질문 유형별 기본 처리 방식을 설정합니다.</p></div></div>
+                    <div class="panel"><div class="notice"><b>ALLOW</b>는 학습 질문을 AI로 전달, <b>GUIDE</b>는 학습 목적을 안내, <b>BLOCK</b>은 부적절하거나 위험한 요청을 차단하는 의미입니다.</div><div id="policyRows" style="margin-top:14px"></div><div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn btn-primary" onclick="savePolicy()">정책 적용</button></div><p class="footer-note">이 화면의 정책 값은 현재 화면 상태에 반영됩니다. 실제 Guardrail 판정 로직과 연결하려면 백엔드 API 연동이 필요합니다.</p></div>
+                </section>
 
-        <input
-                type="text"
-                id="question"
-                placeholder="예: 홍길동 회원정보 알려줘">
+                <section id="parentLogs" class="parent-view hidden">
+                    <div class="content-head"><div><div class="eyebrow">ACTIVITY HISTORY</div><h1 class="page-title">AI 사용 기록</h1><p class="subtitle">현재 브라우저 세션에서 처리한 질문 결과입니다.</p></div><button class="btn btn-secondary" onclick="clearLogs()">기록 비우기</button></div>
+                    <div class="panel"><div class="table-wrap"><table><thead><tr><th>시간</th><th>사용자</th><th>질문</th><th>판정</th></tr></thead><tbody id="logsTable"></tbody></table></div><div id="logsEmpty" class="empty">아직 기록이 없습니다. 자녀 화면에서 질문을 보내면 결과가 표시됩니다.</div><p class="footer-note">기록은 현재 브라우저 세션에서만 유지되며 서버에 저장되지 않습니다.</p></div>
+                </section>
+            </div>
+        </div>
+    </section>
 
-        <button onclick="sendQuestion()">
-            질문하기
-        </button>
+    <section id="childApp" class="page">
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="profile"><div class="avatar">학</div><strong id="childProfileName">학생</strong><small>학습자</small><div style="clear:both"></div></div>
+                <nav><div class="nav-label">학습 메뉴</div><button class="nav-btn active" onclick="showChildView('chat')">✦ 교육용 AI</button><button class="nav-btn" onclick="showChildView('childInfo')">ⓘ 이용 안내</button><div class="nav-bottom"><button class="nav-btn" onclick="logout()">↪ 로그아웃</button></div></nav>
+            </aside>
+            <div>
+                <section id="childChatView" class="child-view">
+                    <div class="content-head"><div><div class="eyebrow">LEARNING ASSISTANT</div><h1 class="page-title">교육용 AI</h1><p class="subtitle">궁금한 내용을 질문하고, 이해할 때까지 차근차근 배워보세요.</p></div></div>
+                    <div class="chat-layout">
+                        <div class="panel">
+                            <div id="chatMessages" class="chat-box"><div class="message ai">안녕하세요! 😊 수학, 과학, 역사 등 공부에 관한 질문을 해보세요. 답만 알려주기보다 이해할 수 있도록 설명해 드릴게요.</div></div>
+                            <div class="quick-prompts"><button onclick="usePrompt('일차방정식을 쉽게 설명해줘.')">일차방정식 설명</button><button onclick="usePrompt('영어 단어를 외우는 방법을 알려줘.')">영어 공부법</button><button onclick="usePrompt('태양계 행성을 순서대로 설명해줘.')">태양계 공부</button></div>
+                            <div class="chat-input"><textarea id="childQuestion" placeholder="예: 분수의 덧셈을 쉽게 설명해줘." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChildQuestion()}"></textarea><button id="sendQuestionButton" class="btn btn-primary" onclick="sendChildQuestion()">질문하기 ↑</button></div>
+                            <p class="footer-note">Enter로 전송 · Shift+Enter로 줄 바꿈</p>
+                        </div>
+                        <aside><div class="side-tip"><h4>🛡️ Guardrail 안내</h4><p>질문은 학습 목적에 맞는지 확인합니다. 학습과 무관한 요청에는 공부를 위한 안내를 제공하고, 부적절하거나 위험한 요청은 차단할 수 있습니다.</p></div><div class="panel"><h3 style="margin-top:0">질문 팁</h3><p class="muted" style="font-size:13px">• 어떤 부분이 어려운지 적어보세요.<br><br>• 풀이 과정과 예시를 요청해보세요.<br><br>• 답만 받기보다 개념을 이해해보세요.</p></div></aside>
+                    </div>
+                </section>
+                <section id="childInfoView" class="child-view hidden"><div class="content-head"><div><div class="eyebrow">HOW TO USE</div><h1 class="page-title">AI 이용 안내</h1><p class="subtitle">교육용 AI를 올바르게 사용하는 방법입니다.</p></div></div><div class="panel"><h3>이렇게 질문해보세요</h3><p>공부하다가 이해가 되지 않는 개념을 물어보거나, 풀이 과정을 단계별로 설명해달라고 요청해보세요.</p><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><h3>학습 목적에 맞게 사용하기</h3><p>시험 답이나 과제를 대신 받기보다는 문제를 이해하고 스스로 해결하는 데 도움을 받아보세요. 학습과 무관한 요청에는 공부를 위한 안내가 표시될 수 있습니다.</p><div class="notice">이 화면은 프로토타입입니다. 실제 판정 결과는 백엔드 Guardrail 구현 및 연결 상태에 따라 달라집니다.</div><button class="btn btn-primary" onclick="showChildView('chat')">AI 질문하러 가기</button></div></section>
+            </div>
+        </div>
+    </section>
+</main>
 
-    </div>
-
-    <div id="result"></div>
-
-</div>
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="modalBackdrop" class="modal-backdrop hidden" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><h3 id="modalTitle">계정 추가</h3><button class="modal-close" onclick="closeModal()" aria-label="닫기">×</button></div><div id="modalBody"></div></div></div>
 
 <script>
+    const demo = {currentUser:null,children:[],words:[],policies:[],logs:[]};
 
-    async function sendQuestion() {
+    const defaultWords = [
+        {id:1,word:'욕설 및 비속어',category:'욕설·비속어',policy:'GUIDE',active:true,defaultWord:true},
+        {id:2,word:'폭력적인 행동을 유도하는 표현',category:'폭력·위험',policy:'BLOCK',active:true,defaultWord:true},
+        {id:3,word:'위험한 무기 제작 요청',category:'폭력·위험',policy:'BLOCK',active:true,defaultWord:true},
+        {id:4,word:'위험 행동 방법 요청',category:'폭력·위험',policy:'BLOCK',active:true,defaultWord:true},
+        {id:5,word:'부적절한 성적 표현',category:'기타',policy:'BLOCK',active:true,defaultWord:true},
+        {id:6,word:'시험 답만 알려줘',category:'학습 부정행위',policy:'GUIDE',active:true,defaultWord:true},
+        {id:7,word:'과제 대신 해줘',category:'학습 부정행위',policy:'GUIDE',active:true,defaultWord:true},
+        {id:8,word:'개인정보 입력',category:'개인정보',policy:'GUIDE',active:true,defaultWord:true},
+        {id:9,word:'유튜브 추천해줘',category:'학습 방해',policy:'GUIDE',active:true,defaultWord:true},
+        {id:10,word:'게임 추천해줘',category:'학습 방해',policy:'GUIDE',active:true,defaultWord:true},
+        {id:11,word:'유명인 관련 잡담',category:'학습 방해',policy:'GUIDE',active:true,defaultWord:true}
+    ];
+    demo.words=defaultWords.map(w=>({...w}));
 
-        const question =
-            document.getElementById("question").value;
+    const defaultPolicies=[
+        {category:'일반 학습 질문',description:'학습에 도움이 되는 질문',policy:'ALLOW'},
+        {category:'학습 방해 요소',description:'게임, 영상 추천 등 학습과 무관한 요청',policy:'GUIDE'},
+        {category:'학습 부정행위',description:'시험 답만 요구하거나 과제를 대신 해달라는 요청',policy:'GUIDE'},
+        {category:'욕설·비속어',description:'부적절한 표현이 포함된 질문',policy:'GUIDE'},
+        {category:'폭력·위험 요청',description:'위험하거나 폭력을 유도하는 요청',policy:'BLOCK'},
+        {category:'성적·부적절한 요청',description:'부적절한 성적 표현이나 요청',policy:'BLOCK'},
+        {category:'개인정보',description:'개인정보가 포함될 수 있는 질문',policy:'GUIDE'}
+    ];
+    demo.policies=defaultPolicies.map(p=>({...p}));
 
-        const result =
-            document.getElementById("result");
+    let toastTimer;
+    function el(id){return document.getElementById(id)}
+    function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));el(id).classList.add('active')}
+    function showLogin(){el('loginForm').classList.remove('hidden');el('signupForm').classList.add('hidden');el('loginError').textContent='';el('signupError').textContent=''}
+    function showSignup(){el('signupForm').classList.remove('hidden');el('loginForm').classList.add('hidden');el('loginError').textContent='';el('signupError').textContent=''}
+    function toast(message){const t=el('toast');t.textContent=message;t.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add('hidden'),2600)}
 
-        if (question.trim() === "") {
+    async function signup(){
+        const name=el('signupName').value.trim();
+        const id=el('signupId').value.trim();
+        const password=el('signupPassword').value;
+        const confirm=el('signupPasswordConfirm').value;
+        const err=el('signupError');
+        err.textContent='';
 
-            result.innerHTML =
-                "<div class='error'>" +
-                "질문을 입력해주세요." +
-                "</div>";
+        if(!name||!id||!password||!confirm){err.textContent='모든 항목을 입력해주세요.';return}
+        if(!/^[a-zA-Z0-9_-]{3,20}$/.test(id)){err.textContent='아이디는 영문, 숫자, _ 또는 -를 사용해 3~20자로 입력해주세요.';return}
+        if(password.length<4){err.textContent='비밀번호를 4자 이상 입력해주세요.';return}
+        if(password!==confirm){err.textContent='비밀번호가 일치하지 않습니다.';return}
 
+        try{
+            const response=await fetch('/api/accounts/register',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({loginId:id,password:password,name:name})
+            });
+            const data=await response.json();
+
+            if(!response.ok){err.textContent=data.message||'회원가입에 실패했습니다.';return}
+
+            el('loginId').value=data.loginId;
+            el('loginPassword').value='';
+            el('signupPassword').value='';
+            el('signupPasswordConfirm').value='';
+            showLogin();
+            toast('회원가입이 완료되었습니다. 로그인해주세요.');
+        }catch(error){
+            console.error('회원가입 오류:',error);
+            err.textContent='서버에 연결할 수 없습니다. Spring Boot 실행 상태를 확인해주세요.';
+        }
+    }
+
+    async function login(){
+        const id=el('loginId').value.trim();
+        const password=el('loginPassword').value;
+        const err=el('loginError');
+        err.textContent='';
+
+        if(!id||!password){err.textContent='아이디와 비밀번호를 입력해주세요.';return}
+
+        try{
+            const response=await fetch('/api/accounts/login',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({loginId:id,password:password,name:null})
+            });
+            const data=await response.json();
+
+            if(!response.ok){err.textContent=data.message||'아이디 또는 비밀번호가 올바르지 않습니다.';return}
+
+            demo.currentUser={id:data.loginId,name:data.name,role:data.role};
+            el('headerLogout').classList.remove('hidden');
+            el('topUser').textContent=data.name+'님';
+
+            if(data.role==='parent'){
+                el('parentProfileName').textContent=data.name;
+                showPage('parentApp');
+                showParentView('dashboard');
+                refreshParent();
+            }else if(data.role==='child'){
+                el('childProfileName').textContent=data.name;
+                showPage('childApp');
+                showChildView('chat');
+            }else{
+                demo.currentUser=null;
+                el('headerLogout').classList.add('hidden');
+                err.textContent='지원하지 않는 계정 유형입니다.';
+            }
+        }catch(error){
+            console.error('로그인 오류:',error);
+            err.textContent='서버에 연결할 수 없습니다. Spring Boot 실행 상태를 확인해주세요.';
+        }
+    }
+
+    function logout(){
+        demo.currentUser=null;
+        el('headerLogout').classList.add('hidden');
+        el('topUser').textContent='학습을 위한 안전한 AI 환경';
+        el('loginPassword').value='';
+        el('loginError').textContent='';
+        showPage('authPage');
+        showLogin();
+    }
+
+    function showParentView(view){
+        document.querySelectorAll('.parent-view').forEach(p=>p.classList.add('hidden'));
+        const map={dashboard:'parentDashboard',children:'parentChildren',words:'parentWords',policy:'parentPolicy',logs:'parentLogs'};
+        el(map[view]).classList.remove('hidden');
+        document.querySelectorAll('[data-parent-view]').forEach(b=>b.classList.toggle('active',b.dataset.parentView===view));
+        if(view==='children')renderChildren();
+        if(view==='words')loadWords();
+        if(view==='policy')renderPolicies();
+        if(view==='logs')renderLogs();
+        refreshParent();
+    }
+
+    function showChildView(view){
+        document.querySelectorAll('.child-view').forEach(p=>p.classList.add('hidden'));
+        el(view==='chat'?'childChatView':'childInfoView').classList.remove('hidden');
+        document.querySelectorAll('#childApp .nav-btn').forEach((b,i)=>{
+            if(i<2)b.classList.toggle('active',(view==='chat'&&i===0)||(view==='childInfo'&&i===1));
+        });
+    }
+
+    function refreshParent(){
+        el('childCount').textContent=demo.children.filter(c=>c.parentId===demo.currentUser?.id).length;
+        el('wordCount').textContent=demo.words.filter(w=>w.active).length;
+        el('logCount').textContent=demo.logs.length;
+    }
+
+    function openChildModal(){
+        el('modalTitle').textContent='자녀 계정 추가';
+        el('modalBody').innerHTML=`
+            <p class="muted" style="font-size:14px">자녀가 사용할 이름, 아이디, 비밀번호를 설정하세요.</p>
+            <div class="field"><label for="childNameInput">자녀 이름</label><input id="childNameInput" placeholder="예: 민준"></div>
+            <div class="field"><label for="childIdInput">자녀 아이디</label><input id="childIdInput" placeholder="영문/숫자/_/- 3~20자"></div>
+            <div class="field"><label for="childPwInput">초기 비밀번호</label><input id="childPwInput" type="password" placeholder="4자 이상"></div>
+            <div class="field"><label for="childPwConfirmInput">비밀번호 확인</label><input id="childPwConfirmInput" type="password" placeholder="비밀번호 다시 입력"></div>
+            <div id="childModalError" class="error"></div>
+            <button class="btn btn-primary btn-full" onclick="createChild()">자녀 계정 생성</button>
+            <p class="footer-note">계정은 서버 DB에 저장됩니다. 생성 후 이 아이디와 비밀번호로 로그인하세요.</p>`;
+        el('modalBackdrop').classList.remove('hidden');
+        setTimeout(()=>el('childNameInput')?.focus(),50);
+    }
+
+    function closeModal(){el('modalBackdrop').classList.add('hidden')}
+
+    async function createChild(){
+        const name=el('childNameInput').value.trim();
+        const id=el('childIdInput').value.trim();
+        const password=el('childPwInput').value;
+        const confirm=el('childPwConfirmInput').value;
+        const err=el('childModalError');
+        err.textContent='';
+
+        if(!name||!id||!password||!confirm){err.textContent='모든 항목을 입력해주세요.';return}
+        if(!/^[a-zA-Z0-9_-]{3,20}$/.test(id)){err.textContent='아이디는 영문, 숫자, _ 또는 -를 사용해 3~20자로 입력해주세요.';return}
+        if(password.length<4){err.textContent='비밀번호를 4자 이상 입력해주세요.';return}
+        if(password!==confirm){err.textContent='비밀번호가 일치하지 않습니다.';return}
+
+        try{
+            const response=await fetch('/api/accounts/register-child',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({loginId:id,password:password,name:name})
+            });
+            const data=await response.json();
+
+            if(!response.ok){err.textContent=data.message||'자녀 계정 생성에 실패했습니다.';return}
+
+            const child={name:data.name,id:data.loginId,role:'child',parentId:demo.currentUser.id};
+            demo.children.push(child);
+            closeModal();
+            renderChildren();
+            refreshParent();
+            toast('자녀 계정이 생성되었습니다. 자녀 로그인 시 이 아이디와 비밀번호를 사용하세요.');
+        }catch(error){
+            console.error('자녀 계정 생성 오류:',error);
+            err.textContent='서버에 연결할 수 없습니다. Spring Boot 실행 상태를 확인해주세요.';
+        }
+    }
+
+    function renderChildren(){
+        const own=demo.children.filter(c=>c.parentId===demo.currentUser?.id);
+        el('childrenCountLabel').textContent=own.length+'명';
+        el('childrenList').innerHTML=own.length?own.map(c=>`
+            <div class="child-row">
+                <div class="child-main">
+                    <div class="child-avatar">🎓</div>
+                    <div><strong>${escapeHtml(c.name)}</strong><div class="muted" style="font-size:13px">아이디: ${escapeHtml(c.id)}</div><div class="word-meta">자녀 계정 · 서버 등록</div></div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-secondary btn-small" onclick="showChildLoginHint('${escapeJs(c.id)}')">로그인 정보</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteChild('${escapeJs(c.id)}')">삭제</button>
+                </div>
+            </div>`).join(''):'<div class="empty">아직 등록된 자녀가 없습니다.<br>오른쪽 위의 자녀 계정 추가 버튼으로 시작하세요.</div>';
+    }
+
+    function showChildLoginHint(id){toast('로그인 화면에서 아이디 '+id+'와 설정한 비밀번호를 입력하세요.')}
+
+    function deleteChild(id){
+        if(!confirm('이 자녀 계정을 화면 목록에서 삭제할까요?'))return;
+        demo.children=demo.children.filter(c=>!(c.id===id&&c.parentId===demo.currentUser?.id));
+        renderChildren();
+        refreshParent();
+        toast('현재 화면의 자녀 목록에서 삭제했습니다. DB 계정은 별도 삭제 API가 필요합니다.');
+    }
+
+    async function loadWords(){
+        try{
+            let response=await fetch('/api/forbidden-words');
+            if(!response.ok)throw new Error('금지어 조회 실패');
+            let words=await response.json();
+
+            if(!words.some(word=>word.defaultWord)){
+                for(const word of defaultWords){
+                    const result=await fetch('/api/forbidden-words',{
+                        method:'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body:JSON.stringify({
+                            word:word.word,category:word.category,policy:word.policy,
+                            active:word.active,defaultWord:true
+                        })
+                    });
+                    if(!result.ok)throw new Error('기본 금지어 등록 실패');
+                }
+                response=await fetch('/api/forbidden-words');
+                if(!response.ok)throw new Error('기본 금지어 재조회 실패');
+                words=await response.json();
+            }
+            demo.words=words;
+            renderWords();
+            refreshParent();
+        }catch(error){
+            console.error(error);
+            toast('금지어를 불러오지 못했습니다. 서버 상태를 확인해주세요.');
+        }
+    }
+
+    function renderWords(){
+        const groups={};
+        demo.words.forEach(w=>(groups[w.category]??=[]).push(w));
+        el('wordGroups').innerHTML=Object.entries(groups).map(([cat,words])=>`
+            <div class="word-category">
+                <h4>${escapeHtml(cat)} <span class="muted" style="font-size:12px;font-weight:400">${words.length}개</span></h4>
+                ${words.map(w=>`
+                    <div class="word-row">
+                        <div class="word-left">
+                            <input type="checkbox" aria-label="${escapeHtml(w.word)} 활성화" ${w.active?'checked':''} onchange="toggleWord(${w.id},this.checked)">
+                            <div><strong>${escapeHtml(w.word)}</strong><div class="word-meta">${w.defaultWord?'기본 항목':'사용자 추가'} · <span class="badge ${policyBadge(w.policy)}">${w.policy}</span></div></div>
+                        </div>
+                        <div style="display:flex;gap:7px;align-items:center">
+                            <select aria-label="${escapeHtml(w.word)} 처리 방식" onchange="changeWordPolicy(${w.id},this.value)" style="padding:7px;border:1px solid var(--line);border-radius:8px">
+                                <option value="GUIDE" ${w.policy==='GUIDE'?'selected':''}>GUIDE</option>
+                                <option value="BLOCK" ${w.policy==='BLOCK'?'selected':''}>BLOCK</option>
+                                <option value="ALLOW" ${w.policy==='ALLOW'?'selected':''}>ALLOW</option>
+                            </select>
+                            ${w.defaultWord?'<span class="badge badge-off">기본</span>':`<button class="btn btn-danger btn-small" onclick="deleteWord(${w.id})">삭제</button>`}
+                        </div>
+                    </div>`).join('')}
+            </div>`).join('');
+        if(!demo.words.length)el('wordGroups').innerHTML='<div class="empty">등록된 항목이 없습니다.</div>';
+    }
+
+    async function addWord(){
+        const word=el('newWord').value.trim();
+        const category=el('newWordCategory').value;
+        const policy=el('newWordPolicy').value;
+        if(!word){toast('추가할 표현을 입력해주세요.');el('newWord').focus();return}
+        if(demo.words.some(w=>w.word.toLowerCase()===word.toLowerCase())){toast('이미 등록된 표현입니다.');return}
+
+        try{
+            const response=await fetch('/api/forbidden-words',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({word,category,policy,active:true,defaultWord:false})
+            });
+            if(!response.ok)throw new Error('금지어 등록 실패');
+            el('newWord').value='';
+            await loadWords();
+            toast('금지어를 DB에 등록했습니다.');
+        }catch(error){
+            console.error(error);
+            toast('등록에 실패했습니다. 서버 로그를 확인해주세요.');
+        }
+    }
+
+    function toggleWord(id,active){const w=demo.words.find(w=>w.id===id);if(w)w.active=active;refreshParent()}
+    function changeWordPolicy(id,policy){const w=demo.words.find(w=>w.id===id);if(w)w.policy=policy;refreshParent()}
+    async function deleteWord(id) {
+        const w = demo.words.find(w => w.id === id);
+
+        if (!w) {
+            toast('삭제할 항목을 찾을 수 없습니다.');
+            return;
+        }
+
+        if (w.defaultWord) {
+            toast('기본 항목은 삭제할 수 없습니다. 체크를 해제해 비활성화하세요.');
+            return;
+        }
+
+        if (!confirm(`'${w.word}' 항목을 DB에서도 삭제할까요?`)) {
             return;
         }
 
         try {
+            const response = await fetch(`/api/forbidden-words/${id}`, {
+                method: 'DELETE'
+            });
 
-            const response =
-                await fetch("/api/question", {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        question: question
-                    })
-                });
-
-            const data =
-                await response.json();
-
-            if (data.error) {
-
-                result.innerHTML =
-                    "<div class='error'>" +
-                    data.error +
-                    "</div>";
-
-                return;
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message || `삭제 실패 (${response.status})`);
             }
 
-            /*
-             * 개인정보 탐지 결과
-             */
-
-            let privacyHtml = "";
-
-            if (data.detectedPrivacy &&
-                data.detectedPrivacy.length > 0) {
-
-                data.detectedPrivacy.forEach(
-                    function(item) {
-
-                        privacyHtml +=
-
-                            "<div class='row'>" +
-                            "<span class='label'>" +
-                            item.type +
-                            "</span>" +
-                            " → 위험도 : " +
-                            item.risk +
-                            "</div>";
-                    }
-                );
-
-            } else {
-
-                privacyHtml =
-                    "<div class='row'>" +
-                    "탐지된 개인정보가 없습니다." +
-                    "</div>";
-            }
-
-
-            /*
-             * 보호된 회원정보
-             */
-
-            let memberHtml = "";
-
-            // 이름은 항상 표시
-            memberHtml +=
-
-                "<div class='row'>" +
-                "<span class='label'>이름 : </span>" +
-                data.name +
-                "</div>";
-
-
-            // PHONE 요청
-            if (data.requestedType === "PHONE") {
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>전화번호 : </span>" +
-                    data.phone +
-                    "</div>";
-            }
-
-
-            // EMAIL 요청
-            else if (data.requestedType === "EMAIL") {
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>이메일 : </span>" +
-                    data.email +
-                    "</div>";
-            }
-
-
-            // RRN 요청
-            else if (data.requestedType === "RRN") {
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>주민등록번호 : </span>" +
-                    data.rrn +
-                    "</div>";
-            }
-
-
-            // 회원정보 전체 요청
-            else if (data.requestedType === "MEMBER_INFO") {
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>주민등록번호 : </span>" +
-                    data.rrn +
-                    "</div>";
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>전화번호 : </span>" +
-                    data.phone +
-                    "</div>";
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>이메일 : </span>" +
-                    data.email +
-                    "</div>";
-
-                memberHtml +=
-
-                    "<div class='row'>" +
-                    "<span class='label'>가입일 : </span>" +
-                    data.joinDate +
-                    "</div>";
-            }
-
-
-            /*
-             * 화면 출력
-             */
-
-            result.innerHTML =
-
-                "<div class='card'>" +
-
-                "<h2>질문 분석</h2>" +
-
-                "<div class='row'>" +
-                "<span class='label'>" +
-                "요청 유형 : " +
-                "</span>" +
-                data.requestedType +
-                "</div>" +
-
-                "<div class='row'>" +
-                "<span class='label'>" +
-                "요청 위험도 : " +
-                "</span>" +
-                data.requestRisk +
-                "</div>" +
-
-                "<div class='row'>" +
-                "<span class='label'>" +
-                "보안 정책 : " +
-                "</span>" +
-                data.securityAction +
-                "</div>" +
-
-                "</div>" +
-
-
-                "<div class='card'>" +
-
-                "<h2>개인정보 탐지 결과</h2>" +
-
-                privacyHtml +
-
-                "</div>" +
-
-
-                "<div class='card'>" +
-
-                "<h2>보호된 회원정보</h2>" +
-
-                memberHtml +
-
-                "</div>";
-
-        }
-
-        catch (error) {
-
-            result.innerHTML =
-                "<div class='error'>" +
-                "서버 연결 중 오류가 발생했습니다." +
-                "</div>";
-
-            console.error(error);
+            demo.words = demo.words.filter(w => w.id !== id);
+            renderWords();
+            refreshParent();
+            toast('금지어를 DB에서 삭제했습니다.');
+        } catch (error) {
+            console.error('금지어 삭제 오류:', error);
+            toast('DB 삭제에 실패했습니다. 서버 로그를 확인해주세요.');
         }
     }
+    function saveWords(){refreshParent();toast('금지어 설정을 현재 화면에 적용했습니다. DB 저장 API는 별도 연결이 필요합니다.')}
+    function policyBadge(policy){return policy==='BLOCK'?'badge-block':policy==='GUIDE'?'badge-guide':'badge-allow'}
 
+    function renderPolicies(){
+        el('policyRows').innerHTML=demo.policies.map((p,i)=>`
+            <div class="policy-row">
+                <div><strong>${escapeHtml(p.category)}</strong><p>${escapeHtml(p.description)}</p></div>
+                <select aria-label="${escapeHtml(p.category)} 정책" onchange="demo.policies[${i}].policy=this.value">
+                    <option value="ALLOW" ${p.policy==='ALLOW'?'selected':''}>ALLOW · 허용</option>
+                    <option value="GUIDE" ${p.policy==='GUIDE'?'selected':''}>GUIDE · 안내</option>
+                    <option value="BLOCK" ${p.policy==='BLOCK'?'selected':''}>BLOCK · 차단</option>
+                </select>
+            </div>`).join('');
+    }
+    function savePolicy(){toast('AI 사용 정책을 현재 화면에 적용했습니다. 백엔드 정책 저장 API는 별도 연결이 필요합니다.')}
+    function renderLogs(){
+        const rows=demo.logs.slice().reverse();
+        el('logsTable').innerHTML=rows.map(l=>`<tr><td>${escapeHtml(l.time)}</td><td>${escapeHtml(l.user)}</td><td title="${escapeHtml(l.question)}">${escapeHtml(l.question.length>38?l.question.slice(0,38)+'…':l.question)}</td><td><span class="badge ${policyBadge(l.policy)}">${l.policy}</span></td></tr>`).join('');
+        el('logsEmpty').classList.toggle('hidden',rows.length>0);
+    }
+    function clearLogs(){if(!demo.logs.length){toast('비울 기록이 없습니다.');return}if(confirm('현재 세션의 사용 기록을 비울까요?')){demo.logs=[];renderLogs();refreshParent();toast('사용 기록을 비웠습니다.')}}
 
-    /*
-     * Enter 키로 질문하기
-     */
+    function usePrompt(text){el('childQuestion').value=text;el('childQuestion').focus()}
+    function addMessage(text,kind){const d=document.createElement('div');d.className='message '+kind;d.textContent=text;el('chatMessages').appendChild(d);el('chatMessages').scrollTop=el('chatMessages').scrollHeight;return d}
 
-    document
-        .getElementById("question")
-        .addEventListener(
-            "keydown",
-            function(event) {
+    async function sendChildQuestion(){
+        const input=el('childQuestion');
+        const question=input.value.trim();
+        const button=el('sendQuestionButton');
+        if(!question){toast('질문을 입력해주세요.');input.focus();return}
+        input.value='';
+        addMessage(question,'user');
+        button.disabled=true;
+        button.textContent='확인 중…';
+        const pending=addMessage('질문을 확인하고 있습니다…','system');
+        let policy='ALLOW',answer='';
 
-                if (event.key === "Enter") {
-                    sendQuestion();
-                }
+        try{
+            const response=await fetch('/api/guardrail',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({question})
+            });
+            if(!response.ok)throw new Error('HTTP '+response.status);
+            const data=await response.json();
+            const decision = String(
+                data.securityAction || data.policy || data.decision || ''
+            ).trim().toUpperCase();
 
+            if (decision === 'BLOCK' || data.blocked === true) {
+                policy = 'BLOCK';
+            } else if (decision === 'GUIDE') {
+                policy = 'GUIDE';
+            } else if (decision === 'ALLOW') {
+                policy = 'ALLOW';
+            } else if (decision === 'PROTECT') {
+                policy = 'PROTECT';
+            } else {
+                policy = 'ALLOW';
             }
-        );
+            answer = data.answer || data.message ||
+                (policy === 'BLOCK'
+                    ? '이 요청은 안전한 학습 환경을 위해 차단되었습니다.'
+                    : policy === 'GUIDE'
+                        ? '학습과 관련된 질문으로 바꿔서 다시 질문해보세요.'
+                        : '요청이 처리되었습니다.');
+        }catch(error){
+            console.error('Guardrail 요청 오류:',error);
+            const local=classifyLocally(question);
+            policy=local.policy;
+            answer=local.answer+'\n\n(서버 연결이 확인되지 않아 예시 판정으로 표시했습니다.)';
+        }
 
+        pending.remove();
+        const kind=policy==='BLOCK'?'system':'ai';
+        addMessage((policy==='BLOCK'?'🚫 BLOCK · 요청 차단\n':policy==='GUIDE'?'💡 GUIDE · 학습 안내\n':'✓ ALLOW · 학습 질문\n')+answer,kind);
+        demo.logs.push({time:new Date().toLocaleString('ko-KR',{hour12:false}),user:demo.currentUser?.name||'학생',question,policy});
+        refreshParent();
+        button.disabled=false;
+        button.textContent='질문하기 ↑';
+    }
+
+    function classifyLocally(question){
+        const q=question.toLowerCase();
+        if(/무기.*만드|폭탄.*만드|사람.*해치|살해.*방법|위험한.*제작/.test(q))return{policy:'BLOCK',answer:'위험한 행동을 돕는 요청에는 답할 수 없습니다. 안전한 주제로 질문해 주세요.'};
+        if(/시험.*답만|답만.*알려|과제.*대신|숙제.*대신|유튜브|게임 추천|연예인|유명인/.test(q))return{policy:'GUIDE',answer:'교육용 AI는 공부를 돕기 위한 서비스입니다. 공부 중 궁금한 개념이나 문제 풀이 과정을 질문해보세요.'};
+        return{policy:'ALLOW',answer:'현재 서버 연결을 사용할 수 없어 실제 AI 답변을 생성하지 못했습니다. Spring Boot의 /api/guardrail 연결을 확인한 뒤 다시 시도해 주세요.'};
+    }
+
+    function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function escapeJs(value){return String(value).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+    // 초기 화면 데이터 렌더링
+    renderPolicies();
+    renderWords();
 </script>
-
 </body>
-
 </html>
